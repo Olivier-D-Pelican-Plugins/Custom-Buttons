@@ -11,7 +11,7 @@ use Olivier\CustomButtons\Services\UrlTemplateParser;
 
 class CustomButtonsWidget extends Widget
 {
-    protected string $view = 'custombuttons::widgets.custom-buttons';
+    protected string $view = 'Custom-Buttons::widgets.custom-buttons';
 
     protected int|string|array $columnSpan = 'full';
 

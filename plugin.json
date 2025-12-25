@@ -5,7 +5,7 @@
     "version": "1.1.0",
     "description": "Add custom buttons and sidebar items with links on the server page.",
     "category": "plugin",
-    "url": "https://github.com/olivierdti/pelican-plugins/tree/main/custombuttons",
+    "url": "https://github.com/Olivier-D-Pelican-Plugins/Custom-Buttons",
     "namespace": "Olivier\\CustomButtons",
     "class": "CustomButtonsPlugin",
     "panels": [
