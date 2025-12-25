@@ -1,5 +1,5 @@
 {
-    "id": "custombuttons",
+    "id": "Custom-Buttons",
     "name": "Custom Buttons",
     "author": "Olivier D.",
     "version": "1.1.0",
@@ -13,6 +13,5 @@
         "server"
     ],
     "panel_version": null,
-    "composer_packages": null,
-    "update_url": "https://raw.githubusercontent.com/olivierdti/pelican-plugins/main/updates/custombuttons/update.json"
+    "composer_packages": null
 }
