@@ -256,43 +256,41 @@ class CustomButtonsPlugin implements HasPluginSettings, Plugin
                 throw new \Exception('Required tables do not exist. Please run migrations.');
             }
 
-            \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
-                CustomButton::global()->delete();
-                CustomSidebarItem::truncate();
+            CustomButton::global()->delete();
+            CustomSidebarItem::query()->delete();
 
-                $allowedButtonFields = ['text', 'url', 'icon', 'color', 'new_tab', 'sort', 'is_active', 'feature'];
-                $allowedItemFields = ['label', 'url', 'icon', 'sort', 'new_tab', 'is_active', 'feature'];
+            $allowedButtonFields = ['text', 'url', 'icon', 'color', 'new_tab', 'sort', 'is_active', 'feature'];
+            $allowedItemFields = ['label', 'url', 'icon', 'sort', 'new_tab', 'is_active', 'feature'];
 
-                foreach ($data['buttons'] ?? [] as $button) {
-                    $buttonData = array_intersect_key($button, array_flip($allowedButtonFields));
-                    
-                    if (empty($buttonData['text']) || empty($buttonData['url'])) {
-                        continue;
-                    }
-                    
-                    CustomButton::create(array_merge([
-                        'server_id' => null,
-                        'color' => 'primary',
-                        'sort' => 0,
-                        'new_tab' => true,
-                        'is_active' => true,
-                    ], $buttonData));
+            foreach ($data['buttons'] ?? [] as $button) {
+                $buttonData = array_intersect_key($button, array_flip($allowedButtonFields));
+                
+                if (empty($buttonData['text']) || empty($buttonData['url'])) {
+                    continue;
                 }
+                
+                CustomButton::create(array_merge([
+                    'server_id' => null,
+                    'color' => 'primary',
+                    'sort' => 0,
+                    'new_tab' => true,
+                    'is_active' => true,
+                ], $buttonData));
+            }
 
-                foreach ($data['sidebar_items'] ?? [] as $item) {
-                    $itemData = array_intersect_key($item, array_flip($allowedItemFields));
-                    
-                    if (empty($itemData['label']) || empty($itemData['url'])) {
-                        continue;
-                    }
-                    
-                    CustomSidebarItem::create(array_merge([
-                        'sort' => 50,
-                        'new_tab' => false,
-                        'is_active' => true,
-                    ], $itemData));
+            foreach ($data['sidebar_items'] ?? [] as $item) {
+                $itemData = array_intersect_key($item, array_flip($allowedItemFields));
+                
+                if (empty($itemData['label']) || empty($itemData['url'])) {
+                    continue;
                 }
-            });
+                
+                CustomSidebarItem::create(array_merge([
+                    'sort' => 50,
+                    'new_tab' => false,
+                    'is_active' => true,
+                ], $itemData));
+            }
             
             Notification::make()
                 ->title('Settings saved')
