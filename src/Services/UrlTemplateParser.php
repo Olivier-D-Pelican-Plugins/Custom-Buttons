@@ -15,8 +15,8 @@ class UrlTemplateParser
             '{{env.P_SERVER_ID}}' => $server->id,
             '{{env.P_SERVER_ALLOCATION_IP}}' => $server->allocation?->ip ?? '',
             '{{env.P_SERVER_ALLOCATION_PORT}}' => $server->allocation?->port ?? '',
-            '{{env.P_SERVER_NODE}}' => $server->node->name,
-            '{{env.P_SERVER_OWNER}}' => $server->user->username,
+            '{{env.P_SERVER_NODE}}' => $server->node?->name ?? '',
+            '{{env.P_SERVER_OWNER}}' => $server->user?->username ?? '',
         ];
 
         return str_replace(
