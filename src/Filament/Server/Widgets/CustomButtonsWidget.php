@@ -19,17 +19,13 @@ class CustomButtonsWidget extends Widget
 
     public function getActions(): array
     {
-        try {
-            $server = Filament::getTenant();
-            if (!$server) {
-                return [];
-            }
-            
+        try {   
+            $server = Filament::getTenant();      
             return CustomButton::active()
                 ->forServer($server->id)
                 ->orderBy('sort')
                 ->get()
-                ->map(fn ($button) => Action::make("button_{$button->id}")
+                ->map(fn ($button) => Action::make("exclude_button_{$button->id}")
                     ->label($button->text)
                     ->icon($button->icon ?? 'tabler-link')
                     ->color($button->color)

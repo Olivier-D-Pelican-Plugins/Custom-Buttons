@@ -87,7 +87,7 @@ class CustomButtonsPlugin implements HasPluginSettings, Plugin
                 
                 Console::registerCustomHeaderActions(
                     HeaderActionPosition::Before,
-                    Action::make("global_button_{$button->id}")
+                    Action::make("exclude_global_button_{$button->id}")
                         ->label($button->text)
                         ->icon($button->icon ?? 'tabler-link')
                         ->color($button->color)
