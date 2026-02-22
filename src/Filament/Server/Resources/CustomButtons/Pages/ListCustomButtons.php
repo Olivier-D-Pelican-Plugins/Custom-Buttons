@@ -22,6 +22,6 @@ class ListCustomButtons extends ListRecords
 
     public function getTitle(): string|Htmlable
     {
-        return trans('Custom-Buttons::buttons.title');
+        return trans('custom-buttons::buttons.title');
     }
 }

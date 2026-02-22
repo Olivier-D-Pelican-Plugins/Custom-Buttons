@@ -12,7 +12,7 @@ class CustomButtonsPluginProvider extends ServiceProvider
 {
     public function register(): void
     {
-        Subuser::registerCustomPermissions('Custom-Buttons', [
+        Subuser::registerCustomPermissions('custom-buttons', [
             'view',
             'create',
             'edit',

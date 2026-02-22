@@ -38,7 +38,7 @@ class CustomButtonResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return trans('Custom-Buttons::buttons.title');
+        return trans('custom-buttons::buttons.title');
     }
 
     public static function canAccess(): bool
@@ -46,7 +46,7 @@ class CustomButtonResource extends Resource
         /** @var Server $server */
         $server = Filament::getTenant();
         
-        return user()?->can('Custom-Buttons.view', $server) ?? false;
+        return user()?->can('custom-buttons.view', $server) ?? false;
     }
 
     public static function table(Table $table): Table
@@ -63,56 +63,56 @@ class CustomButtonResource extends Resource
             ->query(CustomButton::query()->forServer($server->id))
             ->columns([
                 TextColumn::make('text')
-                    ->label(trans('Custom-Buttons::buttons.text'))
+                    ->label(trans('custom-buttons::buttons.text'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('url')
-                    ->label(trans('Custom-Buttons::buttons.url'))
+                    ->label(trans('custom-buttons::buttons.url'))
                     ->searchable()
                     ->limit(50),
                 TextColumn::make('icon')
-                    ->label(trans('Custom-Buttons::buttons.icon'))
+                    ->label(trans('custom-buttons::buttons.icon'))
                     ->icon(fn (CustomButton $button) => $button->icon ?? 'tabler-link'),
                 TextColumn::make('color')
-                    ->label(trans('Custom-Buttons::buttons.color'))
+                    ->label(trans('custom-buttons::buttons.color'))
                     ->badge()
                     ->color(fn (CustomButton $button) => $button->color),
                 IconColumn::make('new_tab')
-                    ->label(trans('Custom-Buttons::buttons.new_tab'))
+                    ->label(trans('custom-buttons::buttons.new_tab'))
                     ->boolean(),
                 TextColumn::make('sort')
-                    ->label(trans('Custom-Buttons::buttons.sort'))
+                    ->label(trans('custom-buttons::buttons.sort'))
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_active')
-                    ->label(trans('Custom-Buttons::buttons.is_active'))
+                    ->label(trans('custom-buttons::buttons.is_active'))
                     ->boolean()
                     ->sortable(),
             ])
             ->recordActions([
                 EditAction::make()
-                    ->label(trans('Custom-Buttons::buttons.edit'))
-                    ->authorize(fn () => user()?->can('Custom-Buttons.edit', $server))
-                    ->modalHeading(trans('Custom-Buttons::buttons.edit_button'))
+                    ->label(trans('custom-buttons::buttons.edit'))
+                    ->authorize(fn () => user()?->can('custom-buttons.edit', $server))
+                    ->modalHeading(trans('custom-buttons::buttons.edit_button'))
                     ->successNotificationTitle(null)
                     ->schema(static::getFormSchema())
                     ->action(function (array $data, CustomButton $record) {
                         $record->update($data);
 
                         Notification::make()
-                            ->title(trans('Custom-Buttons::buttons.notification_edit'))
+                            ->title(trans('custom-buttons::buttons.notification_edit'))
                             ->success()
                             ->send();
                     }),
                 DeleteAction::make()
-                    ->label(trans('Custom-Buttons::buttons.delete'))
-                    ->authorize(fn () => user()?->can('Custom-Buttons.delete', $server))
+                    ->label(trans('custom-buttons::buttons.delete'))
+                    ->authorize(fn () => user()?->can('custom-buttons.delete', $server))
                     ->successNotificationTitle(null)
                     ->action(function (CustomButton $record) {
                         $record->delete();
 
                         Notification::make()
-                            ->title(trans('Custom-Buttons::buttons.notification_delete'))
+                            ->title(trans('custom-buttons::buttons.notification_delete'))
                             ->success()
                             ->send();
                     }),
@@ -121,10 +121,10 @@ class CustomButtonResource extends Resource
                 CreateAction::make('create')
                     ->hiddenLabel()->iconButton()->iconSize(IconSize::ExtraLarge)
                     ->icon('tabler-plus')
-                    ->tooltip(trans('Custom-Buttons::buttons.create_button'))
+                    ->tooltip(trans('custom-buttons::buttons.create_button'))
                     ->createAnother(false)
-                    ->authorize(fn () => user()?->can('Custom-Buttons.create', $server))
-                    ->modalHeading(trans('Custom-Buttons::buttons.create_button'))
+                    ->authorize(fn () => user()?->can('custom-buttons.create', $server))
+                    ->modalHeading(trans('custom-buttons::buttons.create_button'))
                     ->successNotificationTitle(null)
                     ->schema(static::getFormSchema())
                     ->action(function (array $data) use ($server) {
@@ -134,7 +134,7 @@ class CustomButtonResource extends Resource
                         ]);
 
                         Notification::make()
-                            ->title(trans('Custom-Buttons::buttons.notification_create'))
+                            ->title(trans('custom-buttons::buttons.notification_create'))
                             ->success()
                             ->send();
                     }),
@@ -145,20 +145,20 @@ class CustomButtonResource extends Resource
     {
         return [
             TextInput::make('text')
-                ->label(trans('Custom-Buttons::buttons.text'))
+                ->label(trans('custom-buttons::buttons.text'))
                 ->required()
                 ->maxLength(255),
             TextInput::make('url')
-                ->label(trans('Custom-Buttons::buttons.url'))
+                ->label(trans('custom-buttons::buttons.url'))
                 ->required()
                 ->maxLength(255),
             TextInput::make('icon')
-                ->label(trans('Custom-Buttons::buttons.icon'))
+                ->label(trans('custom-buttons::buttons.icon'))
                 ->placeholder('tabler-link')
-                ->helperText(trans('Custom-Buttons::buttons.icon_helper'))
+                ->helperText(trans('custom-buttons::buttons.icon_helper'))
                 ->maxLength(255),
             Select::make('color')
-                ->label(trans('Custom-Buttons::buttons.color'))
+                ->label(trans('custom-buttons::buttons.color'))
                 ->options([
                     'primary' => 'Primary',
                     'success' => 'Success',
@@ -170,17 +170,17 @@ class CustomButtonResource extends Resource
                 ->default('primary')
                 ->required(),
             TextInput::make('sort')
-                ->label(trans('Custom-Buttons::buttons.sort'))
+                ->label(trans('custom-buttons::buttons.sort'))
                 ->numeric()
                 ->default(0)
-                ->helperText(trans('Custom-Buttons::buttons.sort_helper'))
+                ->helperText(trans('custom-buttons::buttons.sort_helper'))
                 ->required(),
             Toggle::make('new_tab')
-                ->label(trans('Custom-Buttons::buttons.new_tab'))
+                ->label(trans('custom-buttons::buttons.new_tab'))
                 ->default(true)
                 ->inline(false),
             Toggle::make('is_active')
-                ->label(trans('Custom-Buttons::buttons.is_active'))
+                ->label(trans('custom-buttons::buttons.is_active'))
                 ->default(true)
                 ->inline(false),
         ];

@@ -23,7 +23,7 @@ class CustomButtonsPlugin implements HasPluginSettings, Plugin
 
     public function getId(): string
     {
-        return 'Custom-Buttons';
+        return 'custom-buttons';
     }
 
     public function register(Panel $panel): void
