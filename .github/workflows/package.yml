@@ -110,4 +110,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh --version
-          gh release upload "${{ steps.release.outputs.tag }}" pwa-plugin.zip --repo "${{ github.repository }}" --clobber
+          gh release upload "${{ steps.release.outputs.tag }}" custom-buttons.zip --repo "${{ github.repository }}" --clobber
