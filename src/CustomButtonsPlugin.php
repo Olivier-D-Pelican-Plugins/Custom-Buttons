@@ -10,6 +10,7 @@ use Filament\Contracts\Plugin;
 use Filament\Notifications\Notification;
 use Filament\Panel;
 use Filament\Support\Enums\Size;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Olivier\CustomButtons\Models\CustomButton;
 use Olivier\CustomButtons\Models\CustomSidebarItem;
@@ -20,6 +21,7 @@ use function Filament\Facades\Filament as FilamentFacade;
 
 class CustomButtonsPlugin implements HasPluginSettings, Plugin
 {
+    protected ?array $tablerIconOptions = null;
 
     public function getId(): string
     {
@@ -123,11 +125,16 @@ class CustomButtonsPlugin implements HasPluginSettings, Plugin
                         ->label('Button URL')
                         ->required()
                         ->maxLength(255),
-                    \Filament\Forms\Components\TextInput::make('icon')
+                    \Filament\Forms\Components\Select::make('icon')
                         ->label('Icon (Tabler icon name)')
+                        ->options($this->getTablerIconOptions())
                         ->placeholder('tabler-link')
                         ->helperText('See https://tabler.io/icons')
-                        ->maxLength(255),
+                        ->allowHtml()
+                        ->preload()
+                        ->searchable()
+                        ->native(false)
+                        ->default('tabler-link'),
                     \Filament\Forms\Components\Select::make('color')
                         ->label('Button Color')
                         ->options([
@@ -174,11 +181,16 @@ class CustomButtonsPlugin implements HasPluginSettings, Plugin
                         ->label('URL')
                         ->required()
                         ->maxLength(255),
-                    \Filament\Forms\Components\TextInput::make('icon')
+                    \Filament\Forms\Components\Select::make('icon')
                         ->label('Icon (Tabler icon name)')
+                        ->options($this->getTablerIconOptions())
                         ->placeholder('tabler-link')
                         ->helperText('See https://tabler.io/icons')
-                        ->maxLength(255),
+                        ->allowHtml()
+                        ->preload()
+                        ->searchable()
+                        ->native(false)
+                        ->default('tabler-link'),
                     \Filament\Forms\Components\TextInput::make('sort')
                         ->label('Sort Order')
                         ->numeric()
@@ -225,6 +237,137 @@ class CustomButtonsPlugin implements HasPluginSettings, Plugin
             ])->toArray();
         } catch (\Exception $e) {
             return [];
+        }
+    }
+
+    protected function getTablerIconOptions(): array
+    {
+        if (is_array($this->tablerIconOptions)) {
+            return $this->tablerIconOptions;
+        }
+
+        $paths = $this->resolveTablerIconPaths();
+
+        $icons = [];
+
+        foreach ($paths as $path) {
+            if (!is_dir($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if ($file->getExtension() !== 'svg') {
+                    continue;
+                }
+
+                $relativePath = str_replace('\\', '/', ltrim(str_replace($path, '', $file->getPathname()), '\\/'));
+                $iconName = preg_replace('/\.svg$/', '', $relativePath);
+
+                if (!is_string($iconName) || $iconName === '') {
+                    continue;
+                }
+
+                $icon = 'tabler-' . str_replace('/', '-', $iconName);
+                $icons[$icon] = $this->formatIconOptionLabel($icon);
+            }
+        }
+
+        if ($icons === []) {
+            $icons = ['tabler-link' => $this->formatIconOptionLabel('tabler-link')];
+        } else {
+            ksort($icons);
+        }
+
+        return $this->tablerIconOptions = $icons;
+    }
+
+    protected function resolveTablerIconPaths(): array
+    {
+        $paths = [];
+        $sets = (array) config('blade-icons.sets', []);
+
+        foreach ($sets as $setName => $setConfig) {
+            if (!is_array($setConfig)) {
+                continue;
+            }
+
+            $prefix = (string) ($setConfig['prefix'] ?? '');
+            $looksTabler = str_contains((string) $setName, 'tabler') || $prefix === 'tabler';
+
+            if (!$looksTabler) {
+                continue;
+            }
+
+            foreach ((array) ($setConfig['paths'] ?? []) as $path) {
+                if (is_string($path) && $path !== '') {
+                    $paths[] = $path;
+                }
+            }
+        }
+
+        $paths[] = base_path('vendor/blade-ui-kit/blade-tabler-icons/resources/svg');
+        $paths[] = base_path('vendor/codeat3/blade-tabler-icons/resources/svg');
+
+        $paths = array_values(array_unique(array_filter(
+            $paths,
+            fn ($path) => is_string($path) && $path !== '' && is_dir($path)
+        )));
+
+        if ($paths !== []) {
+            return $paths;
+        }
+
+        return $this->discoverTablerPathsFromVendor();
+    }
+
+    protected function discoverTablerPathsFromVendor(): array
+    {
+        $vendorPath = base_path('vendor');
+
+        if (!is_dir($vendorPath)) {
+            return [];
+        }
+
+        $matches = [];
+
+        foreach (File::allDirectories($vendorPath) as $directory) {
+            $normalized = str_replace('\\', '/', $directory);
+            if (!str_contains($normalized, 'tabler') || !str_ends_with($normalized, '/resources/svg')) {
+                continue;
+            }
+
+            $matches[] = $directory;
+        }
+
+        return $matches;
+    }
+
+    protected function formatIconOptionLabel(string $icon): string
+    {
+        $factoryClass = 'BladeUI\\Icons\\Factory';
+        $safeIcon = e($icon);
+
+        if (!class_exists($factoryClass)) {
+            return $safeIcon;
+        }
+
+        try {
+            /** @var object $factory */
+            $factory = app($factoryClass);
+
+            if (!method_exists($factory, 'svg')) {
+                return $safeIcon;
+            }
+
+            $svg = $factory->svg($icon, 'h-5 w-5')->toHtml();
+
+            return sprintf(
+                '<span style="display:flex;align-items:center;gap:.5rem;">%s<span>%s</span></span>',
+                $svg,
+                $safeIcon
+            );
+        } catch (\Throwable $exception) {
+            return $safeIcon;
         }
     }
 
